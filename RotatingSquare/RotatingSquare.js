@@ -15,7 +15,8 @@
  */
 
 // prettier-ignore
-var vertices = new Float32Array([-0.5, -0.5,
+var vertices = new Float32Array([
+  -0.5, -0.5,
   0.5, -0.5,
   0.5, 0.5, 
   -0.5, -0.5,
@@ -47,11 +48,11 @@ var click = false;
  */
 // prettier-ignore
 var colors = new Float32Array([
-  1.0, 0.0, 0.0, 1.0, // red
-  0.0, 1.0, 0.0, 1.0, // green
-  0.0, 0.0, 1.0, 1.0, // blue
-  1.0, 0.0, 0.0, 1.0, // red
-  0.0, 0.0, 1.0, 1.0, // blue
+  1.0, 0.5, 0.5, 1.0, // red
+  0.0, 1.0, 0.5, 1.0, // green
+  0.5, 0.5, 1.0, 1.0, // blue
+  1.0, 0.5, 0.5, 1.0, // red
+  0.5, 0.5, 1.0, 1.0, // blue
   1.0, 1.0, 1.0, 1.0, // white
 ]);
 
@@ -127,7 +128,6 @@ function getChar(event) {
 function rotateAndScaleAboutCorner(ang, x, y, tx, ty) {
   modelMatrix.setTranslate(x, y, 0.0);
   modelMatrix.rotate(ang, 0.0, 0.0, 1.0);
-  modelMatrix.scale(currentScale, currentScale, 1);
   modelMatrix.translate(-x, -y, 0.0);
   // unless clicked this is (0,0)
   modelMatrix.translate(tx, ty, 0.0);
@@ -263,7 +263,7 @@ function mainEntrance() {
 
   // key handler
   window.onkeydown = handleKeyPress;
-
+ 
   // get the rendering context for WebGL
   gl = canvas.getContext("webgl2");
   if (!gl) {
@@ -321,7 +321,7 @@ function mainEntrance() {
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
   // specify a fill color for clearing the framebuffer
-  gl.clearColor(0.0, 0.8, 0.8, 1.0);
+  gl.clearColor(0.4, 0.4, 0.45, 1.0);
 
   // set up an animation loop
   modelMatrix = new Matrix4();
@@ -344,7 +344,7 @@ function mainEntrance() {
     // angle increment
     var increment = 2.0;
 
-    // 0-red , 1 -green , 2- blue , 5 white
+    // 0-red, 1-green, 2-blue, 5-white
 
     // current corner for rotation
     var corner = new Vector4([...getVertex(cindex), 0.0, 1.0]);
@@ -376,7 +376,7 @@ function mainEntrance() {
       }
     }
     // Proccess collision
-    // collisionType = 0 -left , 1- right , 2- up 3- down
+    // 0-left, 1-right, 2-up, 3-down
     function processCollision(collidedIndex,collisionPosition,collisonType)
     {
       let translateMatrix = new Matrix4();
