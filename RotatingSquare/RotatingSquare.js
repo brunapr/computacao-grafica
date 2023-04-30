@@ -1,30 +1,5 @@
 /**
  * @file
- *
- * Summary.
- * <p>Similar to <a href="/cs336/examples/example123/content/GL_example3a.js">GL_example3a</a>,
- * but applies the transformation using a matrix in the vertex shader.</p>
- *
- * See the {@link runanimation animation loop} for various kinds of rotations.
- *
- * <p>Uses the type {@link Matrix4} from the teal book utilities
- * in <a href="/WebGL/teal_book/cuon-matrix.js">cuon-matrix.js</a>.</p>
- *
- * <p>Usage example for Matrix4:</p>
- * <pre>
- *   var m = new Matrix4();                           // identity matrix
- *   m.setTranslate(0.3, 0.0, 0.0);                   // make it into a translation matrix
- *   var m2 = new Matrix4().setRotate(90, 0, 0, 1);   // create and make rotation in one step
- *                                                    // (rotate 90 degrees in x-y plane)
- *   m.multiply(m2);                                  // multiply m on right by m2, i.e., m = m * m2;
- *   var theRealData = m.elements;                    // get the underlying Float32Array
- *                                                       (this part is sent to shader)
- *
- *   Alternatively, can chain up the operations:
- *
- *   var m = new Matrix4().setTranslate(0.3, 0.0, 0.0).rotate(90, 0, 0, 1);
- * </pre>
- *
  * @author Bruna Ribeiro
  * @since 30/04/2023
  * @see https://brunapr.github.io/computacao-grafica/RotatingSquare/index.html
