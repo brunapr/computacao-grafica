@@ -1,66 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title>Rotating Square</title>
-        <link rel="stylesheet" type="text/css" href="./styles.css">
-    </head>
+  <head>
+    <meta charset="utf-8" />
+    <title>Rotating Square</title>
+    <link rel="stylesheet" type="text/css" href="./styles.css">
+  </head>
 
-    <body>
-        <canvas id="theCanvas" width="400" height="400">
-            Please use a browser that supports "canvas"
-        </canvas>
+  <body>
+    <canvas id="theCanvas" width="400" height="400">
+      Please use a browser that supports "canvas"
+    </canvas>
 
-        <p>keyboard commands</p>
+    <p>keyboard commands</p>
 
-        <div class="commands">
-            <div class="commands-item">
-                <span>
-                    <b class="color">r</b>, 
-                    <b class="color">g</b>, 
-                    <b class="color">b</b> 
-                    or 
-                    <b class="color">w</b>
-                </span>
-                <span><b>↑</b> or <b>↓</b></span>
-                <span><b>0</b> or <b>1</b></span>
-            </div>
-            <div class="commands-item">
-                <span>change main vertex</span>
-                <span>scale square</span>
-                <span>switch collision mode</span>
-            </div>
-        </div>
+    <div class="commands">
+      <div class="commands-item">
+        <span>
+          <b class="color">r</b>, 
+          <b class="color">g</b>, 
+          <b class="color">b</b> 
+          or 
+          <b class="color">w</b>
+        </span>
+        <span><b>↑</b> or <b>↓</b></span>
+        <span><b>0</b> or <b>1</b></span>
+      </div>
+      <div class="commands-item">
+        <span>change main vertex</span>
+        <span>scale square</span>
+        <span>switch collision mode</span>
+      </div>
+    </div>
 
-        <script id="vertexShader" type="x-shader/x-vertex">
-            uniform mat4 transform;
-            attribute vec4 a_Position;
-            attribute vec4 a_Color;
-            varying vec4 color;
-            void main()
-            {
-              color = a_Color;
-              gl_PointSize = 8.0;
+    <script id="vertexShader" type="x-shader/x-vertex">
+      uniform mat4 transform;
+      attribute vec4 a_Position;
+      attribute vec4 a_Color;
+      varying vec4 color;
+      void main()
+      {
+        color = a_Color;
+        gl_PointSize = 8.0;
 
-              gl_Position = transform * a_Position;
-            }
-        </script>
+        gl_Position = transform * a_Position;
+      }
+    </script>
 
-        <script id="fragmentShader" type="x-shader/x-fragment">
-            // In a webgl fragment shader, float precision has to be specified before
-            // any other variable declarations (in this case, "medium" precision)
-            precision mediump float;
-            varying vec4 color;
-            void main()
-            {
-              gl_FragColor = color;
-            }
-        </script>
-        <script src="./utils/cuon-matrix.js"></script>
-        <script src="./utils/cuon-utils.js"></script>
-        <script src="RotatingSquare.js"></script>
-        <script>
-            window.onload = mainEntrance;
-        </script>
-    </body>
+    <script id="fragmentShader" type="x-shader/x-fragment">
+      // In a webgl fragment shader, float precision has to be specified before
+      // any other variable declarations (in this case, "medium" precision)
+      precision mediump float;
+      varying vec4 color;
+      void main()
+      {
+        gl_FragColor = color;
+      }
+    </script>
+    <script src="./utils/cuon-matrix.js"></script>
+    <script src="./utils/cuon-utils.js"></script>
+    <script src="RotatingSquare.js"></script>
+    <script>
+      window.onload = mainEntrance;
+    </script>
+  </body>
 </html>
