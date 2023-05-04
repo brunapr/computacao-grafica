@@ -11,7 +11,26 @@
             Please use a browser that supports "canvas"
         </canvas>
 
-        <p>Type "r", "g", "b" or "w"</p>
+        <p>keyboard commands</p>
+
+        <div class="commands">
+            <div class="commands-item">
+                <span>
+                    <b class="color">r</b>, 
+                    <b class="color">g</b>, 
+                    <b class="color">b</b> 
+                    or 
+                    <b class="color">w</b>
+                </span>
+                <span><b>↑</b> or <b>↓</b></span>
+                <span><b>0</b> or <b>1</b></span>
+            </div>
+            <div class="commands-item">
+                <span>change main vertex</span>
+                <span>scale square</span>
+                <span>switch collision mode</span>
+            </div>
+        </div>
 
         <script id="vertexShader" type="x-shader/x-vertex">
             uniform mat4 transform;
