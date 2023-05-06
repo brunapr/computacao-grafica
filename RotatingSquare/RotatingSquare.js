@@ -21,7 +21,7 @@
 	 0.5, 0.5, 
 	 -0.5, -0.5,
 	 0.5, 0.5, 
-	 -0.5, 0.5
+	 -0.5, 0.5,
  ]);
  
  /**
@@ -351,106 +351,105 @@
 		* @global
 		*/
 	 var runanimation = (() => {
-		 // control the rotation angle
-		 var ang = 0.0;
+		// control the rotation angle
+		var ang = 0.0;
+
+		// translation
+		var tx = 0;
+		var ty = 0;
+
+		// angle increment
+		var increment = 2.0;
+
+		// current corner for rotation
+		var currentCorner = new Vector4([...getVertex(cindex), 0.0, 1.0]);
+		var cornerIndexes = [0, 1, 2, 5];
+
+		// collision detection function
+		function detectcollision() {
+			for (let i = 0; i < cornerIndexes.length; i++) {
+				let position = getTransformedPosition(cornerIndexes[i]);
+				let x = position[0];
+				let y = position[1];
+	
+				if (x < -wsize / 2) {
+					processCollision(cornerIndexes[i], [x, y], "left");
+				} else if (x > wsize / 2) {
+					processCollision(cornerIndexes[i], [x, y], "right");
+				} else if (y < -wsize / 2) {
+					processCollision(cornerIndexes[i], [x, y], "down");
+				} else if (y > wsize / 2) {
+					processCollision(cornerIndexes[i], [x, y], "up");
+				}
+			}
+		}
+
+		// Get the transformed position of a corner vertex
+		function getTransformedPosition(index) {
+			let vertex = getVertex(index);
+			let position = new Vector4([...vertex, 0.0, 1.0]);
+			position = modelMatrix.multiplyVector4(position);
+			return position.elements.slice(0, 2);
+		}
+
+		// processCollision
+		function processCollision(collidedIndex, position, collisionType) {
+			let translateMatrix = new Matrix4();
+			let fixAmount = 0.08;
+	
+			switch (collisionType) {
+				case "left":
+					translateMatrix.setTranslate(fixAmount, 0, 0);
+					break;
+				case "right":
+					translateMatrix.setTranslate(-fixAmount, 0, 0);
+					break;
+				case "up":
+					translateMatrix.setTranslate(0, -fixAmount, 0);
+					break;
+				case "down":
+					translateMatrix.setTranslate(0, fixAmount, 0);
+					break;
+			}
+	
+			modelMatrix = translateMatrix.multiply(modelMatrix);
+	
+			if (collisionMode === 0) {
+				cindex = collidedIndex;
+				click = true;
+			} else {
+				increment *= -1;
+			}
+		}
  
-		 // translation
-		 var tx = 0;
-		 var ty = 0;
- 
-		 // angle increment
-		 var increment = 2.0;
- 
-		 // 0-red, 1-green, 2-blue, 5-white
- 
-		 // current corner for rotation
-		 var corner = new Vector4([...getVertex(cindex), 0.0, 1.0]);
-		 var cornersIndexes = [0,1,2,5];
- 
-		 // How to detect collision
-		 function detectcollision()
-		 {
-			 let positions = [];
-			 for(let i = 0 ; i < 4; i++)
-			 {
-				 positions.push(new Vector4([...getVertex(cornersIndexes[i]), 0.0, 1.0]));
-				 positions[i]= modelMatrix.multiplyVector4(positions[i]);
-				 let position = positions[i].elements;
-				 if (position[0] < -wsize / 2 )
-				 {
-					 processCollision(cornersIndexes[i], position, 0);
-				 }
-				 else if(position[0] > wsize / 2){
-					 processCollision(cornersIndexes[i], position, 1);
-				 }
-				 else if(position[1] < -wsize / 2){
-					 processCollision(cornersIndexes[i], position, 3);
-				 }
-				 else if( position[1] > wsize / 2)
-				 {
-					 processCollision(cornersIndexes[i], position, 2);
-				 }
-			 }
-		 }
-		 // Process collision
-		 // 0-left, 1-right, 2-up, 3-down
-		 function processCollision(collidedIndex,collisonType)
-		 {
-			 let translateMatrix = new Matrix4();
-			 let fixammout=0.08
- 
-			 switch (collisonType) {
-				 case 0:
-					 translateMatrix.setTranslate(fixammout, 0, 0);
-					 break;
-				 case 1:
-					 translateMatrix.setTranslate(-fixammout, 0, 0);
-					 break;
-				 case 2:
-					 translateMatrix.setTranslate(0, -fixammout, 0);
-					 break;
-				 case 3:
-					 translateMatrix.setTranslate(0, fixammout, 0);
-					 break;
-			 }
-			 modelMatrix = translateMatrix.multiply(modelMatrix);
- 
-			 if(collisionMode == 0) { 
-				 cindex = collidedIndex;
-				 click = true;
-			 } else {
-				 increment *= -1;
-			 }
-		 }
- 
-		 /**)
-			* <p>Keep drawing frames.</p>
-			* Request that the browser calls {@link runanimation} again "as soon as it can".
-			* @callback loop
-			* @see https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
-			*/
-		 return () => {
-			 detectcollision();
-			 ang += increment;
-			 ang = ang % 360;
-			 if (click) {
-				 var [vx, vy] = getVertex(cindex);
-				 corner.elements[0] = vx;
-				 corner.elements[1] = vy;
-				 corner = modelMatrix.multiplyVector4(corner);
-				 tx = corner.elements[0] - vx;
-				 ty = corner.elements[1] - vy;
- 
-				 click = false;
-			 }
-			 rotateAndScaleAboutCorner(ang, corner.elements[0], corner.elements[1], tx, ty);
- 
-			 draw();
- 
-			 requestAnimationFrame(runanimation);
-		 };
-	 })();
- 
-	 // draw!
-	 runanimation();
+		/**)
+		* <p>Keep drawing frames.</p>
+		* Request that the browser calls {@link runanimation} again "as soon as it can".
+		* @callback loop
+		* @see https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
+		*/
+		return () => {
+			detectcollision();
+			ang += increment;
+			ang = ang % 360;
+			if (click) {
+				var [vx, vy] = getVertex(cindex);
+				currentCorner.elements[0] = vx;
+				currentCorner.elements[1] = vy;
+				currentCorner = modelMatrix.multiplyVector4(currentCorner);
+				tx = currentCorner.elements[0] - vx;
+				ty = currentCorner.elements[1] - vy;
+
+				click = false;
+			}
+			rotateAndScaleAboutCorner(ang, currentCorner.elements[0], currentCorner.elements[1], tx, ty);
+
+			draw();
+
+			requestAnimationFrame(runanimation);
+		};
+	})();
+
+	// draw!
+	runanimation();
  }
