@@ -394,12 +394,6 @@ function handleKeyPress(event) {
       headMatrix.setTranslate(0, 10, 0);
       torsoMatrix.setTranslate(0, -2, 0);
       armMatrix.setTranslate(0, 0, 2.5);
-      zoom = 25;
-      viewMatrix = new Matrix4().setLookAt(
-        zoom, zoom, zoom, // eye
-        0, 0, 0,          // at - looking at the origin
-        0, 1, 0           // up vector - y axis
-      );
       break;
     default:
       return;
