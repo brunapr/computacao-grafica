@@ -93,13 +93,18 @@ var armMatrixLocal = new Matrix4().setScale(15, 1, 0.5);
 var handMatrixLocal = new Matrix4().setScale(1, 1, 1);
 
 /**
+ * Camera position.
+ * @type {Array<Number>}
+ */
+ var eye = [20, 20, 20];
+
+/**
  * View matrix.
  * @type {Matrix4}
  */
 // prettier-ignore
-var zoom = 25;
 var viewMatrix = new Matrix4().setLookAt(
-  zoom, zoom, zoom, // eye
+  ...eye, // eye
   0, 0, 0,          // at - looking at the origin
   0, 1, 0           // up vector - y axis
 );
@@ -110,12 +115,34 @@ var viewMatrix = new Matrix4().setLookAt(
  */
 var modelMatrix = new Matrix4();
 
+ /**
+  * Returns the magnitude (length) of a vector.
+  * @param {Array<Number>} v n-D vector.
+  * @returns {Number} vector length.
+  * @see https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce
+  */
+var vecLen = (v) =>
+  Math.sqrt(v.reduce((accumulator, value) => accumulator + value * value, 0));
+
+/**
+ * View distance.
+ * @type {Number}
+ */
+var viewDistance = vecLen(eye);
+
+
 /**
  * <p>Projection matrix.</p>
  * Here use aspect ratio 3/2 corresponding to canvas size 600 x 400.
  * @type {Matrix4}
  */
 var projection = new Matrix4().setPerspective(45, 1.5, 0.1, 1000);
+
+ /**
+  * Object to enable rotation by mouse dragging (arcball).
+  * @type {SimpleRotator}
+  */
+var rotator;
 
 /**
  * A very basic stack class,
@@ -314,6 +341,7 @@ function getChar(event) {
  */
 function handleKeyPress(event) {
   var ch = getChar(event);
+  var d;
   let opt = document.getElementById("options");
   switch (ch) {
     case "r":
@@ -349,22 +377,14 @@ function handleKeyPress(event) {
       ang -= 2;
       break;
     case "ArrowUp":
-      if(zoom > 5) {
-        zoom -= 5;
-        viewMatrix = new Matrix4().setLookAt(
-          zoom, zoom, zoom, // eye
-          0, 0, 0,          // at - looking at the origin
-          0, 1, 0           // up vector - y axis
-        );
-      } 
+      d = rotator.getViewDistance();
+      d = Math.min(d - 1, 90);
+      rotator.setViewDistance(d);
       break;
     case "ArrowDown":
-      zoom += 5;
-      viewMatrix = new Matrix4().setLookAt(
-        zoom, zoom, zoom, // eye
-        0, 0, 0,          // at - looking at the origin
-        0, 1, 0           // up vector - y axis
-      );
+      d = rotator.getViewDistance();
+      d = Math.max(d + 1, 20);
+      rotator.setViewDistance(d);
       break;
     case " ":
       is_paused = !is_paused;
@@ -470,6 +490,8 @@ function renderCube(matrixStack, matrixLocal) {
 function draw(useRotator = true) {
   // clear the framebuffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  if (useRotator) viewMatrix.elements = rotator.getViewMatrix();
 
   // set up the matrix stack
   var s = new Stack();
@@ -602,6 +624,11 @@ window.addEventListener("load", (event) => {
     0.1,
     1000
   );
+
+  // create new rotator object
+  rotator = new SimpleRotator(canvas, draw);
+  rotator.setViewMatrix(viewMatrix.elements);
+  rotator.setViewDistance(viewDistance);
 
   /**
    * <p>Define an animation loop.</p>
