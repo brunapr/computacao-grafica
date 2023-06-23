@@ -25,13 +25,10 @@
  * @see https://stackoverflow.com/questions/68528251/three-js-error-during-additional-components-importing
  * @see https://dplatz.de/blog/2019/es6-bare-imports.html
  */
-
 //import * as THREE from "https://unpkg.com/three@0.148.0/build/three.module.js?module";
 //import { OrbitControls } from "https://unpkg.com/three@0.148.0/examples/jsm/controls/OrbitControls.js?module";
-
 import * as THREE from "./three.module.js";
 import { OrbitControls } from "./OrbitControls.js";
-
 /**
  * Creates a Sierpiński gasket given a json object with
  * four <a href="https://www.qfbox.info/4d/tetrahedron">tetrahedra</a>.
@@ -55,21 +52,18 @@ import { OrbitControls } from "./OrbitControls.js";
  */
 var fractalScene = (loadedScene, maxLevel = 0, colorLevel = 0) => {
   let scene = loadedScene.clone();
-
   // create an array with the four initial copies
   let copies = scene.children.filter(
     (child) => child.name.slice(0, 4) == "copy"
   );
   // remove all four copies from the scene
   scene.remove(...copies);
-
   // initial level with only four copies
   let currentLevel = copies.map((copy) => {
     let obj = copy.clone();
     obj.matrixAutoUpdate = false;
     return obj;
   });
-
   for (let level = 1; level <= maxLevel; level++) {
     let nextLevel = [];
     // create a next level with 4 * currentLevel.length tets
@@ -104,7 +98,6 @@ var fractalScene = (loadedScene, maxLevel = 0, colorLevel = 0) => {
   scene.add(...currentLevel);
   return scene;
 };
-
 /**
  * Self invoked asynchronous anonymous function for reading a json file,
  * created by the Three.js editor, and rendering a 3D Sierpinski gasket.
@@ -116,45 +109,37 @@ var fractalScene = (loadedScene, maxLevel = 0, colorLevel = 0) => {
  */
 (async function () {
   const canvas = document.querySelector("#theCanvas");
-
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const jfile = urlParams.get("file") || "./sierpinski3.json";
-
+  const jfile = urlParams.get("file") || "./scene.json";
   const loader = new THREE.ObjectLoader();
-
   let response = await fetch(jfile);
   let model = await response.json();
-
   var loadedScene = loader.parse(model);
-
   var aspect = canvas.clientWidth / canvas.clientHeight;
-
   // The WebGL renderer displays your beautifully crafted scenes using WebGL.
   const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
   renderer.shadowMap.enabled = true;
-
   const camera = new THREE.PerspectiveCamera(45, aspect, 1, 10000);
   handleWindowResize();
-
   /**
    * Screen events.
    */
   function handleWindowResize() {
-    let h = window.innerHeight;
-    let w = window.innerWidth;
-    if (h > w) {
-      h = w / aspect;
-    } else {
-      w = h * aspect;
-    }
+    // let h = window.innerHeight;
+    // let w = window.innerWidth;
+    // if (h > w) {
+    //   h = w / aspect;
+    // } else {
+    //   w = h * aspect;
+    // }
+    let h = 600;
+    let w = 600;
     renderer.setSize(w, h);
     camera.aspect = aspect;
     camera.updateProjectionMatrix();
   }
-
   window.addEventListener("resize", handleWindowResize, false);
-
   /**
    * <p>Create radio buttons for nbtn color levels.</p>
    *
@@ -211,7 +196,6 @@ var fractalScene = (loadedScene, maxLevel = 0, colorLevel = 0) => {
             ${checked}>`
         );
     }
-
     // listen to events on every checkbox of the radio buttons
     matches = document.querySelectorAll(`input[name=${name}]`);
     matches.forEach((elem) => {
@@ -223,10 +207,8 @@ var fractalScene = (loadedScene, maxLevel = 0, colorLevel = 0) => {
         }
       });
     });
-
     return sbtn;
   }
-
   /**
    * Recreates the current scene from the loadedScene,
    * with the current mlevel and clevel,
@@ -243,7 +225,6 @@ var fractalScene = (loadedScene, maxLevel = 0, colorLevel = 0) => {
     renderer.render(scene, camera);
     $("#animate").html(`Animate (${scene.children.length - 4})`);
   };
-
   /**
    * Maximum level using JQuery to get it from the interface.
    *
@@ -251,7 +232,6 @@ var fractalScene = (loadedScene, maxLevel = 0, colorLevel = 0) => {
    * @var
    */
   var mlevel = +$("input[type='radio'][name='mlevel']:checked").val();
-
   /**
    * Color level being used, which has the same range as the selected maximum level.
    *
@@ -259,7 +239,6 @@ var fractalScene = (loadedScene, maxLevel = 0, colorLevel = 0) => {
    * @var
    */
   var clevel = createRadioBtns({ nbtn: mlevel, cbfunc: renderScene });
-
   /**
    * Current scene with the Sierpinski gasket at the current maximum level.
    *
@@ -267,9 +246,7 @@ var fractalScene = (loadedScene, maxLevel = 0, colorLevel = 0) => {
    * @var
    */
   var scene = fractalScene(loadedScene, mlevel, clevel);
-
   $("#animate").html(`Animate (${scene.children.length - 4})`);
-
   // listen to events on every checkbox of the radio buttons
   var matches = document.querySelectorAll('input[name="mlevel"]');
   matches.forEach((elem) => {
@@ -283,7 +260,6 @@ var fractalScene = (loadedScene, maxLevel = 0, colorLevel = 0) => {
       renderScene();
     });
   });
-
   // listen to events on every checkbox of the radio buttons
   matches = document.querySelectorAll('input[name="animate"]');
   matches.forEach((elem) => {
@@ -291,7 +267,6 @@ var fractalScene = (loadedScene, maxLevel = 0, colorLevel = 0) => {
       controls.autoRotate = !!+event.target.value;
     });
   });
-
   // Orbit controls allow the camera to orbit around a target.
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.screenSpacePanning = true;
@@ -311,11 +286,9 @@ var fractalScene = (loadedScene, maxLevel = 0, colorLevel = 0) => {
     // Fires when the camera has been transformed by the controls.
     if (!controls.autoRotate) renderer.render(scene, camera);
   });
-
   // controls.update() must be called after any manual changes to the camera's transform
   camera.position.set(2, 2, 5);
   controls.update();
-
   /**
    * <p>A built in function that can be used instead of
    * {@link https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame requestAnimationFrame}.</p>
